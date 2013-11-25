@@ -30,7 +30,7 @@ def git_clone(href, path):
     ''' Clone a git repository from its remote address to a local path.
     '''
     info('Cloning to ' + path)
-    run_cmd('git', 'clone', '--mirror', href, path)
+    run_cmd(('git', 'clone', '--mirror', href, path))
 
 def git_fetch(repo_path):
     ''' Run `git fetch` inside a local git repository.
