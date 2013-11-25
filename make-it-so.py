@@ -6,6 +6,7 @@ from flask import Flask, redirect
 from git import prepare_git_checkout
 from util import get_directory_response
 from util import get_file_response
+from jekyll import jekyll_build
 
 app = Flask(__name__)
 
@@ -29,22 +30,22 @@ def repo_only_slash(account, repo):
 def repo_ref(account, repo, ref):
     ''' Redirect to add trailing slash.
     '''
-    prepare_git_checkout(account, repo, ref)
+    jekyll_build(prepare_git_checkout(account, repo, ref))
     return redirect('/%s/%s/%s/' % (account, repo, ref), 302)
 
 @app.route('/<account>/<repo>/<ref>/')
 def repo_ref_slash(account, repo, ref):
     ''' Show repository root directory listing.
     '''
-    checkout_path = prepare_git_checkout(account, repo, ref)
-    return get_directory_response(checkout_path)
+    site_path = jekyll_build(prepare_git_checkout(account, repo, ref))
+    return get_directory_response(site_path)
 
 @app.route('/<account>/<repo>/<ref>/<path:path>')
 def repo_ref_path(account, repo, ref, path):
     ''' Show response for a path, whether a file or directory.
     '''
-    checkout_path = prepare_git_checkout(account, repo, ref)
-    local_path = join(checkout_path, path)
+    site_path = jekyll_build(prepare_git_checkout(account, repo, ref))
+    local_path = join(site_path, path)
     
     if isfile(local_path) and not isdir(local_path):
         return get_file_response(local_path)
@@ -59,6 +60,6 @@ def repo_ref_path(account, repo, ref, path):
 
 if __name__ == '__main__':
     basicConfig(level=DEBUG, format='%(levelname)06s: %(message)s')
-    app.run(debug=True)
+    app.run('0.0.0.0', debug=True)
 
     

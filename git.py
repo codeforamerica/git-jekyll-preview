@@ -21,6 +21,8 @@ def prepare_git_checkout(account, repo, ref):
         
         git_fetch(repo_path)
         git_checkout(repo_path, checkout_path, ref)
+        from jekyll import jekyll_build
+        jekyll_build(checkout_path)
     
     return checkout_path
 
