@@ -1,4 +1,4 @@
-from os import getcwd, chdir, utime, stat, listdir
+from os import utime, stat, listdir
 from fcntl import flock, LOCK_EX, LOCK_UN
 from contextlib import contextmanager
 from subprocess import Popen, PIPE
@@ -8,24 +8,6 @@ from os.path import join
 from time import time
 
 from flask import Response
-
-@contextmanager
-def working_directory(path):
-    ''' Change directory to path, then change back. Use as a context manager.
-    
-        Yields nothing.
-    '''
-    debug('Changing directories to ' + path)
-
-    try:
-        start_path = getcwd()
-        chdir(path)
-    
-        yield
-    
-    finally:
-        debug('Returning to ' + path)
-        chdir(start_path)
 
 @contextmanager
 def locked_file(path):
@@ -56,10 +38,10 @@ def touch(path):
     debug('Touching ' + path)
     utime(path, None)
 
-def run_cmd(*args):
+def run_cmd(args, cwd=None):
     ''' Runs a single command in a new process.
     '''
-    command = Popen(args, stdout=PIPE, stderr=PIPE)
+    command = Popen(args, stdout=PIPE, stderr=PIPE, cwd=cwd)
     command.wait()
     
     if command.returncode != 0:

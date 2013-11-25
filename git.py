@@ -2,7 +2,7 @@ from os.path import join, exists
 from os import getcwd, mkdir
 from logging import info
 
-from util import working_directory, locked_file, is_fresh, touch, run_cmd
+from util import locked_file, is_fresh, touch, run_cmd
 
 def prepare_git_checkout(account, repo, ref):
     '''
@@ -37,8 +37,7 @@ def git_fetch(repo_path):
     '''
     info('Fetching in ' + repo_path)
     
-    with working_directory(repo_path):
-        run_cmd('git', 'fetch')
+    run_cmd(('git', 'fetch'), repo_path)
     
     touch(repo_path)
 
@@ -50,7 +49,6 @@ def git_checkout(repo_path, checkout_path, ref):
     if not exists(checkout_path):
         mkdir(checkout_path)
 
-    with working_directory(repo_path):
-        run_cmd('git', '--work-tree='+checkout_path, 'checkout', ref, '--', '.')
+    run_cmd(('git', '--work-tree='+checkout_path, 'checkout', ref, '--', '.'), repo_path)
     
     touch(checkout_path)
