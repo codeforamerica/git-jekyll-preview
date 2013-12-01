@@ -1,0 +1,8 @@
+{
+  "name": "ubuntu 12.04",
+  "run_list":
+  [
+    "jekyll"
+  ],
+  "user": "ubuntu"
+}
