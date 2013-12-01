@@ -2,7 +2,9 @@
   "name": "ubuntu 12.04",
   "run_list":
   [
-    "jekyll"
+    "jekyll",
+    "flask",
+    "directories"
   ],
   "user": "ubuntu"
 }
