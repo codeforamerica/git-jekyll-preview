@@ -3,7 +3,7 @@
   "run_list":
   [
     "jekyll",
-    "flask",
+    "flask", "requests",
     "directories"
   ],
   "user": "ubuntu"
