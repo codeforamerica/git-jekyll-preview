@@ -28,9 +28,9 @@ def locked_file(path):
         flock(file, LOCK_UN)
 
 def is_fresh(path):
-    ''' Return true if path is younger than 5 seconds.
+    ''' Return true if path is younger than 10 seconds.
     '''
-    return stat(path).st_mtime > time() - 5
+    return stat(path).st_mtime > time() - 10
 
 def touch(path):
     ''' Touch the path to bring its modified timestamp to now.

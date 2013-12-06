@@ -28,17 +28,17 @@ def make_redirect():
     return redirect(get_redirect(request.path, referer_url), 302)
 
 def get_auth():
-    '''
+    ''' Get (username, password) tuple from flask.request, or None.
     '''
     auth = request.authorization
     
-    return (auth.username, auth.password) if auth else False
+    return (auth.username, auth.password) if auth else None
 
 def make_401_response():
-    '''
+    ''' Create an HTTP 401 Not Authorized response to trigger basic auth.
     '''
     resp = make_response('No!', 401)
-    resp.headers['WWW-Authenticate'] = 'Basic realm="No!"'
+    resp.headers['WWW-Authenticate'] = 'Basic realm="Please enter a Github username and password. These will be passed on to Github.com, and not stored or recorded."'
     
     return resp
 
@@ -74,11 +74,7 @@ def repo_ref(account, repo, ref):
     if should_redirect():
         return make_redirect()
     
-    try:
-        jekyll_build(prepare_git_checkout(account, repo, ref, auth=get_auth()))
-        return redirect('/%s/%s/%s/' % (account, repo, ref), 302)
-    except PrivateRepoException:
-        return make_401_response()
+    return redirect('/%s/%s/%s/' % (account, repo, ref), 302)
 
 @app.route('/<account>/<repo>/<ref>/')
 def repo_ref_slash(account, repo, ref):
@@ -89,9 +85,10 @@ def repo_ref_slash(account, repo, ref):
     
     try:
         site_path = jekyll_build(prepare_git_checkout(account, repo, ref, auth=get_auth()))
-        return get_directory_response(site_path)
     except PrivateRepoException:
         return make_401_response()
+
+    return get_directory_response(site_path)
 
 @app.route('/<account>/<repo>/<ref>/<path:path>')
 def repo_ref_path(account, repo, ref, path):
@@ -102,10 +99,11 @@ def repo_ref_path(account, repo, ref, path):
 
     try:
         site_path = jekyll_build(prepare_git_checkout(account, repo, ref, auth=get_auth()))
-        local_path = join(site_path, path)
     except PrivateRepoException:
         return make_401_response()
     
+    local_path = join(site_path, path)
+
     if isfile(local_path) and not isdir(local_path):
         return get_file_response(local_path)
     

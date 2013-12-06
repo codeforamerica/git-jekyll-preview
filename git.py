@@ -41,8 +41,6 @@ def prepare_git_checkout(account, repo, ref, auth):
             git_fetch(repo_path)
 
         git_checkout(repo_path, checkout_path, ref)
-        from jekyll import jekyll_build
-        jekyll_build(checkout_path)
     
     # Make sure these are gone before we return.
     environ.update(dict(GIT_ASKPASS='', GIT_USERNAME='', GIT_PASSWORD=''))
