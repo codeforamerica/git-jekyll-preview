@@ -47,7 +47,47 @@ def hello_world():
     if should_redirect():
         return make_redirect()
     
-    return 'Hello world'
+    script = '''
+        if(location.href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\/.+\/_posts\/....-..-..-.+$/))
+        {
+            var url = location.href.replace(/^https:\/\/github.com\/(.+\/.+)\/(edit|blob)\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
+                                            'http://host:port/$1/$3/$4/$5/$6/$7');
+        }
+        else if(location.href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\/[^\/]+\/.+$/))
+        {
+            var url = location.href.replace(/^https:\/\/github.com\/(.+\/.+)\/(edit|blob)\/([^\/]+\/.+)$/,
+                                            'http://host:port/$1/$3');
+        }
+        else if(location.href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\/.+\/_posts\/....-..-..-.+$/))
+        {
+            var url = location.href.replace(/^http:\/\/prose.io\/#(.+\/.+)\/edit\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
+                                            'http://host:port/$1/$2/$3/$4/$5/$6');
+        }
+        else if(location.href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\/[^\/]+\/.+$/))
+        {
+            var url = location.href.replace(/^http:\/\/prose.io\/#(.+\/.+)\/edit\/([^\/]+\/.+)$/,
+                                            'http://host:port/$1/$2');
+        }
+        else
+        {
+            var url = false;
+        }
+        
+        if(url)
+        {
+            if(url && url.match(/\.(md|markdown)$/)) {
+                url = url.replace(/\.(md|markdown)$/, '.html');
+            }
+        
+            alert(url);
+        }
+    '''
+    
+    script = script.replace('host:port', request.host).replace('+', '%2B')
+    script = script.replace('var ', 'var%20').replace('else if', 'else%20if')
+    script = script.replace(' ', '').replace('\n', '').replace('#', '%23')
+    
+    return 'Drag this to your bookmarks bar: <a href="javascript:%s">Preview on %s</a>' % (script, request.host)
 
 @app.route('/<account>/<repo>')
 def repo_only(account, repo):
