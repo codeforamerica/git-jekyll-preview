@@ -49,32 +49,33 @@ def hello_world():
     
     script = '''
     
-    var url = false;
+    var href = location.href,
+        url = false;
     
-    if(location.href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\/$/))
+    if(href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\//))
     {
-        if(location.href.match(/_posts\/....-..-..-.+$/))
+        if(href.match(/\/_posts\/....-..-..-.+$/))
         {
-            var url = location.href.replace(/^https:\/\/github.com\/(.+\/.+)\/(edit|blob)\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
-                                            'http://host:port/$1/$3/$4/$5/$6/$7');
+            var url = href.replace(/^.+\/(.+\/.+)\/(edit|blob)\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
+                                   'http://host:port/$1/$3/$4/$5/$6/$7');
         }
         else
         {
-            var url = location.href.replace(/^https:\/\/github.com\/(.+\/.+)\/(edit|blob)\/([^\/]+\/.+)$/,
-                                            'http://host:port/$1/$3');
+            var url = href.replace(/^.+\/(.+\/.+)\/(edit|blob)\/([^\/]+\/.+)$/,
+                                   'http://host:port/$1/$3');
         }
     }
-    else if(location.href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\//))
+    else if(href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\//))
     {
-        if(location.href.match(/_posts\/....-..-..-.+$/))
+        if(href.match(/\/_posts\/....-..-..-.+$/))
         {
-            var url = location.href.replace(/^http:\/\/prose.io\/#(.+\/.+)\/edit\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
-                                            'http://host:port/$1/$2/$3/$4/$5/$6');
+            var url = href.replace(/^.+\/#(.+\/.+)\/edit\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
+                                   'http://host:port/$1/$2/$3/$4/$5/$6');
         }
         else
         {
-            var url = location.href.replace(/^http:\/\/prose.io\/#(.+\/.+)\/edit\/([^\/]+\/.+)$/,
-                                            'http://host:port/$1/$2');
+            var url = href.replace(/^.+\/#(.+\/.+)\/edit\/([^\/]+\/.+)$/,
+                                   'http://host:port/$1/$2');
         }
     }
     
@@ -85,6 +86,10 @@ def hello_world():
         }
     
         window.open(url);
+    }
+    else
+    {
+        alert(href);
     }
     '''
     
