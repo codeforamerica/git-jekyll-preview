@@ -48,39 +48,44 @@ def hello_world():
         return make_redirect()
     
     script = '''
-        if(location.href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\/.+\/_posts\/....-..-..-.+$/))
+    
+    var url = false;
+    
+    if(location.href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\/$/))
+    {
+        if(location.href.match(/_posts\/....-..-..-.+$/))
         {
             var url = location.href.replace(/^https:\/\/github.com\/(.+\/.+)\/(edit|blob)\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
                                             'http://host:port/$1/$3/$4/$5/$6/$7');
         }
-        else if(location.href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\/[^\/]+\/.+$/))
+        else
         {
             var url = location.href.replace(/^https:\/\/github.com\/(.+\/.+)\/(edit|blob)\/([^\/]+\/.+)$/,
                                             'http://host:port/$1/$3');
         }
-        else if(location.href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\/.+\/_posts\/....-..-..-.+$/))
+    }
+    else if(location.href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\//))
+    {
+        if(location.href.match(/_posts\/....-..-..-.+$/))
         {
             var url = location.href.replace(/^http:\/\/prose.io\/#(.+\/.+)\/edit\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
                                             'http://host:port/$1/$2/$3/$4/$5/$6');
         }
-        else if(location.href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\/[^\/]+\/.+$/))
+        else
         {
             var url = location.href.replace(/^http:\/\/prose.io\/#(.+\/.+)\/edit\/([^\/]+\/.+)$/,
                                             'http://host:port/$1/$2');
         }
-        else
-        {
-            var url = false;
+    }
+    
+    if(url)
+    {
+        if(url && url.match(/\.(md|markdown)$/)) {
+            url = url.replace(/\.(md|markdown)$/, '.html');
         }
-        
-        if(url)
-        {
-            if(url && url.match(/\.(md|markdown)$/)) {
-                url = url.replace(/\.(md|markdown)$/, '.html');
-            }
-        
-            alert(url);
-        }
+    
+        window.open(url);
+    }
     '''
     
     script = script.replace('host:port', request.host).replace('+', '%2B')
