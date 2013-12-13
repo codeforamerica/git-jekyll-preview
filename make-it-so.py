@@ -48,49 +48,12 @@ def hello_world():
         return make_redirect()
     
     script = '''
-    
-    var href = location.href,
-        url = false;
-    
-    if(href.match(/^https:\/\/github.com\/.+\/.+\/(edit|blob)\//))
-    {
-        if(href.match(/\/_posts\/....-..-..-.+$/))
+    javascript:(
+        function ()
         {
-            var url = href.replace(/^.+\/(.+\/.+)\/(edit|blob)\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
-                                   'http://host:port/$1/$3/$4/$5/$6/$7');
-        }
-        else
-        {
-            var url = href.replace(/^.+\/(.+\/.+)\/(edit|blob)\/([^\/]+\/.+)$/,
-                                   'http://host:port/$1/$3');
-        }
-    }
-    else if(href.match(/^http:\/\/prose.io\/#.+\/.+\/edit\//))
-    {
-        if(href.match(/\/_posts\/....-..-..-.+$/))
-        {
-            var url = href.replace(/^.+\/#(.+\/.+)\/edit\/(.+)\/_posts\/(....)-(..)-(..)-(.+)$/,
-                                   'http://host:port/$1/$2/$3/$4/$5/$6');
-        }
-        else
-        {
-            var url = href.replace(/^.+\/#(.+\/.+)\/edit\/([^\/]+\/.+)$/,
-                                   'http://host:port/$1/$2');
-        }
-    }
-    
-    if(url)
-    {
-        if(url && url.match(/\.(md|markdown)$/)) {
-            url = url.replace(/\.(md|markdown)$/, '.html');
-        }
-    
-        window.open(url);
-    }
-    else
-    {
-        alert(href);
-    }
+            document.getElementsByTagName('head')[0].appendChild(document.createElement('script')).src='http://host:port/bookmarklet.js';
+        }()
+    );
     '''
     
     script = script.replace('host:port', request.host).replace('+', '%2B')
@@ -98,6 +61,17 @@ def hello_world():
     script = script.replace(' ', '').replace('\n', '').replace('#', '%23')
     
     return 'Drag this to your bookmarks bar: <a href="javascript:%s">Preview on %s</a>' % (script, request.host)
+
+@app.route('/bookmarklet.js')
+def bookmarklet_script():
+    if should_redirect():
+        return make_redirect()
+    
+    script = open('scripts/bookmarklet.js')
+    resp = make_response(script.read(), 200)
+    resp.headers['Content-Type'] = 'text/javascript'
+
+    return resp
 
 @app.route('/<account>/<repo>')
 def repo_only(account, repo):
