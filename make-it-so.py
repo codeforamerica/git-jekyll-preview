@@ -56,9 +56,9 @@ def hello_world():
     );
     '''
     
-    script = script.replace('host:port', request.host).replace('+', '%2B')
-    script = script.replace('var ', 'var%20').replace('else if', 'else%20if')
-    script = script.replace(' ', '').replace('\n', '').replace('#', '%23')
+    script = script.replace('http', request.scheme)
+    script = script.replace('host:port', request.host)
+    script = script.replace(' ', '').replace('\n', '')
     
     return 'Drag this to your bookmarks bar: <a href="javascript:%s">Preview on %s</a>' % (script, request.host)
 
