@@ -25,7 +25,12 @@ def make_redirect():
     ''' Return a flask.redirect for the current flask.request.
     '''
     referer_url = request.headers.get('Referer')
-    return redirect(get_redirect(request.path, referer_url), 302)
+
+    other = redirect(get_redirect(request.path, referer_url), 302)
+    other.headers['Cache-Control'] = 'no-store private'
+    other.headers['Vary'] = 'Referer'
+
+    return other
 
 def get_auth():
     ''' Get (username, password) tuple from flask.request, or None.
@@ -132,7 +137,9 @@ def repo_ref_path(account, repo, ref, path):
         return get_file_response(local_path)
     
     if isdir(local_path) and not path.endswith('/'):
-        return redirect('/%s/%s/%s/%s/' % (account, repo, ref, path), 302)
+        other = redirect('/%s/%s/%s/%s/' % (account, repo, ref, path), 302)
+        other.headers['Cache-Control'] = 'no-store private'
+        return other
     
     if isdir(local_path):
         return get_directory_response(local_path)

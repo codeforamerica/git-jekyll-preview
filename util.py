@@ -55,7 +55,7 @@ def get_file_response(path):
     mimetype, encoding = guess_type(path)
     
     with open(path) as file:
-        return Response(file.read(), headers={'Content-Type': mimetype})
+        return Response(file.read(), headers={'Content-Type': mimetype, 'Cache-Control': 'no-store private'})
 
 def get_directory_response(path):
     ''' Return a flask Response for a directory listing.
@@ -68,4 +68,4 @@ def get_directory_response(path):
     items = ['<li><a href="%s">%s</a></li>' % (n, n) for n in names]
     html = '<ul>' + ''.join(items) + '</ul>'
     
-    return Response(html, headers={'Content-Type': 'text/html'})
+    return Response(html, headers={'Content-Type': 'text/html', 'Cache-Control': 'no-store private'})
