@@ -14,7 +14,7 @@ def prepare_git_checkout(account, repo, ref, auth):
     repo_path = join(getcwd(), 'repos/%s-%s' % (account, repo))
     repo_refs = repo_href + '/info/refs?service=git-upload-pack'
     checkout_path = join(getcwd(), 'checkouts/%s-%s-%s' % (account, repo, ref))
-    checkout_lock = checkout_path + '.lock'
+    checkout_lock = checkout_path + '.git-lock'
     
     if exists(checkout_path) and is_fresh(checkout_path):
         return checkout_path
@@ -64,12 +64,30 @@ def git_fetch(repo_path):
 
 def git_checkout(repo_path, checkout_path, ref):
     ''' Check out a git repository to a given reference and path.
+        
+        This function is assumed to be run in a lock.
     '''
     info('Checking out to ' + checkout_path)
 
     if not exists(checkout_path):
         mkdir(checkout_path)
+    
+    hash_file = checkout_path + '.commit-hash'
+    commit_hash = run_cmd(('git', 'show', '--pretty=%H', '--summary', ref), repo_path).strip()
+    
+    do_checkout = True
+    
+    if exists(hash_file):
+        previous_hash = open(hash_file).read().strip()
+        
+        if previous_hash == commit_hash:
+            debug('Skipping checkout to '+checkout_path)
+            do_checkout = False
 
-    run_cmd(('git', '--work-tree='+checkout_path, 'checkout', ref, '--', '.'), repo_path)
+    if do_checkout:
+        run_cmd(('git', '--work-tree='+checkout_path, 'checkout', ref, '--', '.'), repo_path)
     
     touch(checkout_path)
+    
+    with open(hash_file, 'w') as file:
+        print >> file, commit_hash

@@ -39,13 +39,15 @@ def touch(path):
     utime(path, None)
 
 def run_cmd(args, cwd=None):
-    ''' Runs a single command in a new process.
+    ''' Runs a single command in a new process, returns its stdout.
     '''
-    command = Popen(args, stdout=PIPE, stderr=PIPE, cwd=cwd)
+    command = Popen(args, stdout=PIPE, cwd=cwd)
     command.wait()
     
     if command.returncode != 0:
         raise RuntimeError(command.stderr.read())
+    
+    return command.stdout.read()
 
 def get_file_response(path):
     ''' Return a flask Response for a simple file.
