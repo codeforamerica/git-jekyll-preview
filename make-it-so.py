@@ -1,5 +1,6 @@
 from logging import DEBUG, basicConfig
 from os.path import join, isdir, isfile
+from time import time
 
 from flask import Flask, redirect, request, make_response, render_template
 
@@ -71,6 +72,25 @@ def hello_world():
     script = script.replace(' ', '').replace('\n', '')
     
     return render_template('index.html', script=script, request=request)
+
+@app.route('/.well-known/status')
+def wellknown_status():
+    if should_redirect():
+        return make_redirect()
+    
+    status = '''
+    {
+      "status": "ok",
+      "updated": %d,
+      "dependencies": [ ],
+      "resources": { }
+    }
+    ''' % time()
+    
+    resp = make_response(status, 401)
+    resp.headers['Content-Type'] = 'application/json'
+
+    return resp
 
 @app.route('/bookmarklet.js')
 def bookmarklet_script():
