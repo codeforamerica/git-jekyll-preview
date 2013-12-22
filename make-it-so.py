@@ -87,7 +87,7 @@ def wellknown_status():
     }
     ''' % time()
     
-    resp = make_response(status, 401)
+    resp = make_response(status, 200)
     resp.headers['Content-Type'] = 'application/json'
 
     return resp
