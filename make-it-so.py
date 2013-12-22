@@ -1,7 +1,7 @@
 from logging import DEBUG, basicConfig
 from os.path import join, isdir, isfile
 
-from flask import Flask, redirect, request, make_response
+from flask import Flask, redirect, request, make_response, render_template
 
 from git import prepare_git_checkout, PrivateRepoException
 from href import needs_redirect, get_redirect
@@ -65,7 +65,7 @@ def hello_world():
     script = script.replace('host:port', request.host)
     script = script.replace(' ', '').replace('\n', '')
     
-    return 'Drag this to your bookmarks bar: <a href="javascript:%s">Preview on %s</a>' % (script, request.host)
+    return render_template('index.html', script=script, request=request)
 
 @app.route('/bookmarklet.js')
 def bookmarklet_script():

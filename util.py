@@ -60,7 +60,7 @@ def get_file_response(path):
 def get_directory_response(path):
     ''' Return a flask Response for a directory listing.
     '''
-    names = listdir(path)
+    names = sorted(listdir(path))
 
     if 'index.html' in names:
         return get_file_response(join(path, 'index.html'))

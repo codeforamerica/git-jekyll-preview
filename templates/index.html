@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Jekit</title>
+    <link type="text/css" href="http://openstreetmap.us/~migurski/style.css" rel="stylesheet">
+    <style type="text/css">
+    
+        kbd
+        {
+            background-color: rgba(255, 255, 255, .5);
+            border: 1px solid rgba(0, 0, 0, .15);
+            border-radius: 5px;
+            padding: 4px 8px;
+        }
+
+        samp
+        {
+            white-space: nowrap;
+            font-size: 80%;
+        }
+
+        kbd a { text-decoration: none }
+        samp em { font-style: normal }
+
+    </style>
+</head>
+<body>
+    <h1>Jekit</h1>
+    <p>
+        Preview your Github-hosted websites before making them live. Use it to
+        check your plain static or <a href="http://jekyllrb.com">Jekyll</a>-generated
+        websites before you make them live to <a href="http://pages.github.com">Github Pages</a>
+        or to your own server.
+    </p>
+    <p>
+        <a href="http://www.codeforamerica.org"><img src="http://codeforamerica.org/wp-content/uploads/2011/12/CfA_logo-300x120.png" width="150" height="60"></a>
+    </p>
+    <p>
+        Written by <a href="http://mike.teczno.com">Michal Migurski</a> with
+        <a href="https://github.com/mick">Mick Thompson</a>, © 2013 Code for America.
+    </p>
+    <h2>Check it, before you wreck it.</h2>
+    <p>
+        Preview pages in Jekit by adding your Github account name and repository
+        name to a Jekit URL:
+    </p>
+    <p>
+        <samp>{{request.host}}/<em>&lt;account&gt;/&lt;repo&gt;/</em></samp>
+        <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency">{{request.host}}/<em>codeforamerica/beyondtransparency/</em></a></samp>
+    </p>
+    <p>
+        To view a commit or branch other than <i>master</i>, add the ref to the
+        end:
+    </p>
+    <p>
+        <samp>{{request.host}}/&lt;account&gt;/&lt;repo&gt;/<em>&lt;ref&gt;/</em></samp>
+        <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency/08463604">{{request.host}}/codeforamerica/beyondtransparency/<em>08463604/</em></a></samp>
+    </p>
+    <p>
+        To view a specific file or directory, add it after the ref:
+    </p>
+    <p>
+        <samp>{{request.host}}/&lt;account&gt;/&lt;repo&gt;/&lt;ref&gt;/<em>wow/such-path.html</em></samp>
+        <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency/08463604/chapters/preface/">{{request.host}}/codeforamerica/beyondtransparency/08463604/<em>chapters/preface/</em></a></samp>
+    </p>
+    <h2>Bookmarklet</h2>
+    <p>
+        From <a href="http://github.com">Github</a>
+        or <a href="http://Prose.io">Prose.io</a>,
+        drag this to your bookmarks bar to install
+        the <a href="bookmarklet.js">bookmarklet</a>.
+    </p>
+    <p>
+        <kbd><a href="javascript:{{script|safe}}">Preview on {{request.host}}</a></kbd>
+    </p>
+</body>
+</html>

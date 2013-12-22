@@ -38,5 +38,5 @@ if(url)
 }
 else
 {
-    alert(href);
+    alert("Jekit doesn't understand this URL:\n" + href);
 }
