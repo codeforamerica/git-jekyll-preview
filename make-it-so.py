@@ -97,11 +97,13 @@ def bookmarklet_script():
     if should_redirect():
         return make_redirect()
     
-    script = open('scripts/bookmarklet.js')
-    resp = make_response(script.read(), 200)
-    resp.headers['Content-Type'] = 'text/javascript'
+    js = open('scripts/bookmarklet.js').read()
 
-    return resp
+    script = make_response(js.replace('host:port', request.host), 200)
+    script.headers['Content-Type'] = 'text/javascript'
+    script.headers['Cache-Control'] = 'no-store private'
+
+    return script
 
 @app.route('/<account>/<repo>')
 def repo_only(account, repo):
