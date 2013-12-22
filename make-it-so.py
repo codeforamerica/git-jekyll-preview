@@ -3,7 +3,7 @@ from os.path import join, isdir, isfile
 
 from flask import Flask, redirect, request, make_response, render_template
 
-from git import prepare_git_checkout, PrivateRepoException
+from git import prepare_git_checkout, PrivateRepoException, MissingRepoException
 from href import needs_redirect, get_redirect
 from util import get_directory_response
 from util import get_file_response
@@ -46,6 +46,11 @@ def make_401_response():
     resp.headers['WWW-Authenticate'] = 'Basic realm="Please enter a Github username and password. These will be passed on to Github.com, and not stored or recorded."'
     
     return resp
+
+def make_404_response(template, vars):
+    '''
+    '''
+    return make_response(render_template(template, **vars), 404)
 
 @app.route('/')
 def hello_world():
@@ -114,6 +119,8 @@ def repo_ref_slash(account, repo, ref):
     
     try:
         site_path = jekyll_build(prepare_git_checkout(account, repo, ref, auth=get_auth()))
+    except MissingRepoException:
+        return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
     except PrivateRepoException:
         return make_401_response()
 
@@ -128,6 +135,8 @@ def repo_ref_path(account, repo, ref, path):
 
     try:
         site_path = jekyll_build(prepare_git_checkout(account, repo, ref, auth=get_auth()))
+    except MissingRepoException:
+        return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
     except PrivateRepoException:
         return make_401_response()
     
@@ -144,7 +153,8 @@ def repo_ref_path(account, repo, ref, path):
     if isdir(local_path):
         return get_directory_response(local_path)
     
-    return 'finished path ' + path
+    kwargs = dict(account=account, repo=repo, ref=ref, path=path)
+    return make_404_response('error-404.html', kwargs)
 
 @app.route('/<path:path>')
 def all_other_paths(path):

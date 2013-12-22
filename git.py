@@ -7,6 +7,8 @@ from requests import get
 
 class PrivateRepoException (Exception): pass
 
+class MissingRepoException (Exception): pass
+
 def prepare_git_checkout(account, repo, ref, auth):
     '''
     '''
@@ -24,6 +26,10 @@ def prepare_git_checkout(account, repo, ref, auth):
     if auth_check.status_code == 401:
         # Github wants a username & password
         raise PrivateRepoException()
+    
+    elif auth_check.status_code == 404:
+        # This repository might not exist at all
+        raise MissingRepoException()
     
     elif auth:
         debug('Adding Github credentials to environment')
