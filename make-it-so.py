@@ -1,16 +1,23 @@
 from logging import DEBUG, basicConfig
 from os.path import join, isdir, isfile
+from urllib import urlencode
 from time import time
 
-from flask import Flask, redirect, request, make_response, render_template
+from flask import Flask, redirect, request, make_response, render_template, session
 
+from requests import post
+from requests_oauthlib import OAuth2Session
 from git import prepare_git_checkout, PrivateRepoException, MissingRepoException
 from href import needs_redirect, get_redirect
 from util import get_directory_response
 from util import get_file_response
 from jekyll import jekyll_build
 
+from git import github_client_id, github_client_secret
+flask_secret_key = 'poop'
+
 app = Flask(__name__)
+app.secret_key = flask_secret_key
 
 def should_redirect():
     ''' Return True if the current flask.request should redirect.
@@ -40,13 +47,32 @@ def get_auth():
     
     return (auth.username, auth.password) if auth else None
 
-def make_401_response():
-    ''' Create an HTTP 401 Not Authorized response to trigger basic auth.
+def get_token():
+    ''' Get OAuth token from flask.session, or a fake one guaranteed to fail.
     '''
-    resp = make_response('No!', 401)
-    resp.headers['WWW-Authenticate'] = 'Basic realm="Please enter a Github username and password. These will be passed on to Github.com, and not stored or recorded."'
+    token = dict(token_type='bearer', access_token='<fake token, will fail>')
+    token.update(session.get('token', {}))
     
-    return resp
+    return token
+
+def make_401_response():
+    ''' Create an HTTP 401 Not Authorized response to trigger Github OAuth.
+    
+        Start by redirecting the user to Github OAuth authorization page:
+        http://developer.github.com/v3/oauth/#redirect-users-to-request-github-access
+    '''
+    state_id = 'foobar' # fake.
+    states = session.get('states', {})
+    states[state_id] = dict(redirect=request.url, created=time())
+    session['states'] = states
+    
+    data = dict(scope='repo', client_id=github_client_id, state=state_id)
+    
+    auth = redirect('https://github.com/login/oauth/authorize?' + urlencode(data), 302)
+    auth.headers['Cache-Control'] = 'no-store private'
+    auth.headers['Vary'] = 'Referer'
+
+    return auth
 
 def make_404_response(template, vars):
     '''
@@ -105,6 +131,48 @@ def bookmarklet_script():
 
     return script
 
+@app.route('/oauth/callback')
+def get_oauth_callback():
+    ''' Handle Github's OAuth callback after a user authorizes.
+    
+        http://developer.github.com/v3/oauth/#github-redirects-back-to-your-site
+    '''
+    if 'error' in request.args:
+        return render_template('error-oauth.html', reason="you didn't authorize access to your account.")
+    
+    try:
+        code, state_id = request.args['code'], request.args['state']
+    except:
+        return render_template('error-oauth.html', reason='missing code or state in callback.')
+    
+    try:
+        state = session['states'].pop(state_id)
+    except:
+        return render_template('error-oauth.html', reason='state "%s" not found?' % state_id)
+    
+    #
+    # Exchange the temporary code for an access token:
+    # http://developer.github.com/v3/oauth/#parameters-1
+    #
+    data = dict(client_id=github_client_id, code=code, client_secret=github_client_secret)
+    resp = post('https://github.com/login/oauth/access_token', urlencode(data),
+                headers={'Accept': 'application/json'})
+    auth = resp.json()
+    
+    if 'error' in auth:
+        return render_template('error-oauth.html', reason='Github said "%(error)s".' % auth)
+    
+    elif 'access_token' not in auth:
+        return render_template('error-oauth.html', reason="missing `access_token`.")
+    
+    session['token'] = auth
+    
+    other = redirect(state['redirect'], 302)
+    other.headers['Cache-Control'] = 'no-store private'
+    other.headers['Vary'] = 'Referer'
+
+    return other
+
 @app.route('/<account>/<repo>')
 def repo_only(account, repo):
     ''' Redirect to "master" on a hunch.
@@ -140,7 +208,7 @@ def repo_ref_slash(account, repo, ref):
         return make_redirect()
     
     try:
-        site_path = jekyll_build(prepare_git_checkout(account, repo, ref, auth=get_auth()))
+        site_path = jekyll_build(prepare_git_checkout(account, repo, ref, token=get_token()))
     except MissingRepoException:
         return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
     except PrivateRepoException:
@@ -156,7 +224,7 @@ def repo_ref_path(account, repo, ref, path):
         return make_redirect()
 
     try:
-        site_path = jekyll_build(prepare_git_checkout(account, repo, ref, auth=get_auth()))
+        site_path = jekyll_build(prepare_git_checkout(account, repo, ref, token=get_token()))
     except MissingRepoException:
         return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
     except PrivateRepoException:

@@ -3,38 +3,43 @@ from os import getcwd, mkdir, environ
 from logging import info, debug
 
 from util import locked_file, is_fresh, touch, run_cmd
+from requests_oauthlib import OAuth2Session
 from requests import get
+
+github_client_id = r'e62e0d541bb6d0125b62'
+github_client_secret = r'1f488407e92a59beb897814e9240b5a06a2020e3'
 
 class PrivateRepoException (Exception): pass
 
 class MissingRepoException (Exception): pass
 
-def prepare_git_checkout(account, repo, ref, auth):
+def prepare_git_checkout(account, repo, ref, token):
     '''
     '''
     repo_href = 'https://github.com/%s/%s.git' % (account, repo)
     repo_path = join(getcwd(), 'repos/%s-%s' % (account, repo))
-    repo_refs = repo_href + '/info/refs?service=git-upload-pack'
+    repo_refs = 'https://api.github.com/repos/%s/%s/git/refs/heads/%s' % (account, repo, ref)
     checkout_path = join(getcwd(), 'checkouts/%s-%s-%s' % (account, repo, ref))
     checkout_lock = checkout_path + '.git-lock'
     
     if exists(checkout_path) and is_fresh(checkout_path):
         return checkout_path
     
-    auth_check = get(repo_refs, auth=auth)
+    auth_check = OAuth2Session(github_client_id, token=token).get(repo_refs)
+    ref_sha = auth_check.json().get('object', {}).get('sha', '')
     
     if auth_check.status_code == 401:
-        # Github wants a username & password
+        # Github wants authentication.
         raise PrivateRepoException()
     
     elif auth_check.status_code == 404:
-        # This repository might not exist at all
+        # This repository might not exist at all?
         raise MissingRepoException()
     
-    elif auth:
+    elif token:
         debug('Adding Github credentials to environment')
         environ.update(dict(GIT_ASKPASS=join(dirname(__file__), 'askpass.py')))
-        environ.update(dict(GIT_USERNAME=auth[0], GIT_PASSWORD=auth[1]))
+        environ.update(dict(GIT_USERNAME=token['access_token'], GIT_PASSWORD=''))
     
     else:
         debug('Clearing Github credentials from environment')
