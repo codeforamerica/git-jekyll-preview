@@ -41,37 +41,53 @@
         <a href="https://github.com/mick">Mick Thompson</a>, © 2013 Code for America.
     </p>
     <h2>Check it, before you wreck it.</h2>
+    <ol>
+    <li>
+        <p>
+            Preview pages in Jekit by adding your Github account name and repository
+            name to a Jekit URL:
+        </p>
+        <p>
+            <samp>{{request.host}}/<em>&lt;account&gt;/&lt;repo&gt;/</em></samp>
+        </p>
+        <p>
+            Example showing the <a href="https://github.com/codeforamerica/beyondtransparency">Beyond Transparency book site</a>:
+            <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency">{{request.host}}/<em>codeforamerica/beyondtransparency/</em></a></samp>
+        </p>
+    </li>
+    <li>
+        <p>
+            To view a commit or branch other than <i>master</i>, add the ref to the
+            end:
+        </p>
+        <p>
+            <samp>{{request.host}}/&lt;account&gt;/&lt;repo&gt;/<em>&lt;ref&gt;/</em></samp>
+        </p>
+        <p>
+            Example showing a single <a href="https://github.com/codeforamerica/beyondtransparency/tree/08463604">Beyond Transparency commit</a>:
+            <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency/08463604">{{request.host}}/codeforamerica/beyondtransparency/<em>08463604/</em></a></samp>
+        </p>
+    </li>
+    <li>
+        <p>
+            To view a specific file or directory, add it after the ref:
+        </p>
+        <p>
+            <samp>{{request.host}}/&lt;account&gt;/&lt;repo&gt;/&lt;ref&gt;/<em>wow/such-path.html</em></samp>
+        </p>
+        <p>
+            Example of the <a href="https://github.com/codeforamerica/beyondtransparency/blob/master/chapters/part-0.md">Beyond Transparency preface</a>:
+            <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency/master/chapters/preface/">{{request.host}}/codeforamerica/beyondtransparency/master/<em>chapters/preface/</em></a></samp>
+        </p>
+    </li>
+    </ol>
+    <h2>Private Repositories</h2>
     <p>
-        Preview pages in Jekit by adding your Github account name and repository
-        name to a Jekit URL:
-    </p>
-    <p>
-        <samp>{{request.host}}/<em>&lt;account&gt;/&lt;repo&gt;/</em></samp>
-    </p>
-    <p>
-        Example showing the <a href="https://github.com/codeforamerica/beyondtransparency">Beyond Transparency book site</a>:
-        <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency">{{request.host}}/<em>codeforamerica/beyondtransparency/</em></a></samp>
-    </p>
-    <p>
-        To view a commit or branch other than <i>master</i>, add the ref to the
-        end:
-    </p>
-    <p>
-        <samp>{{request.host}}/&lt;account&gt;/&lt;repo&gt;/<em>&lt;ref&gt;/</em></samp>
-    </p>
-    <p>
-        Example showing a single <a href="https://github.com/codeforamerica/beyondtransparency/tree/08463604">Beyond Transparency commit</a>:
-        <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency/08463604">{{request.host}}/codeforamerica/beyondtransparency/<em>08463604/</em></a></samp>
-    </p>
-    <p>
-        To view a specific file or directory, add it after the ref:
-    </p>
-    <p>
-        <samp>{{request.host}}/&lt;account&gt;/&lt;repo&gt;/&lt;ref&gt;/<em>wow/such-path.html</em></samp>
-    </p>
-    <p>
-        Example of the <a href="https://github.com/codeforamerica/beyondtransparency/blob/master/chapters/part-0.md">Beyond Transparency preface</a>:
-        <br><samp><a href="//{{request.host}}/codeforamerica/beyondtransparency/master/chapters/preface/">{{request.host}}/codeforamerica/beyondtransparency/master/<em>chapters/preface/</em></a></samp>
+        Jekit will ask for access to your Github account to preview private
+        repositories. You can revoke Jekit’s access via your
+        <a href="https://github.com/settings/applications">Github Applications page</a>.
+        Jekit will keep a copy of each private repository you preview for an
+        unknown period of time.
     </p>
     <h2>Bookmarklet</h2>
     <p>
