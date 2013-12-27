@@ -66,7 +66,7 @@ def make_401_response():
     states[state_id] = dict(redirect=request.url, created=time())
     session['states'] = states
     
-    data = dict(scope='repo', client_id=github_client_id, state=state_id)
+    data = dict(scope='user,repo', client_id=github_client_id, state=state_id)
     
     auth = redirect('https://github.com/login/oauth/authorize?' + urlencode(data), 302)
     auth.headers['Cache-Control'] = 'no-store private'
@@ -84,6 +84,8 @@ def hello_world():
     if should_redirect():
         return make_redirect()
     
+    id = session.get('id', None)
+    
     script = '''
     javascript:(
         function ()
@@ -97,7 +99,7 @@ def hello_world():
     script = script.replace('host:port', request.host)
     script = script.replace(' ', '').replace('\n', '')
     
-    return render_template('index.html', script=script, request=request)
+    return render_template('index.html', id=id, script=script, request=request)
 
 @app.route('/.well-known/status')
 def wellknown_status():
@@ -167,11 +169,31 @@ def get_oauth_callback():
     
     session['token'] = auth
     
+    #
+    # Figure out who's here.
+    #
+    url = 'https://api.github.com/user'
+    id = OAuth2Session(github_client_id, token=session['token']).get(url).json()
+    id = dict(login=id['login'], avatar_url=id['avatar_url'], html_url=id['html_url'])
+    session['id'] = id
+    
     other = redirect(state['redirect'], 302)
     other.headers['Cache-Control'] = 'no-store private'
     other.headers['Vary'] = 'Referer'
 
     return other
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    '''
+    '''
+    if 'id' in session:
+        session.pop('id')
+
+    if 'token' in session:
+        session.pop('token')
+    
+    return redirect('/', 302)
 
 @app.route('/<account>/<repo>')
 def repo_only(account, repo):

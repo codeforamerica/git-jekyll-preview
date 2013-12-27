@@ -22,7 +22,16 @@
 
         kbd a { text-decoration: none }
         samp em { font-style: normal }
+        input[type="submit"] { cursor: pointer }
 
+        img#avatar
+        {
+            vertical-align: top;
+            margin-right: 0.5em;
+            border-radius: 6px;
+            height: 3em;
+        }
+        
     </style>
 </head>
 <body>
@@ -89,6 +98,13 @@
         Jekit will keep a copy of each private repository you preview for an
         unknown period of time.
     </p>
+    {% if id %}
+        <form action="logout" method="post">
+            <img id="avatar" src="{{id.avatar_url}}" alt="">
+            Jekit knows you as <a href="{{id.html_url}}">{{id.login}}</a>.
+            <input type="submit" value="Forget me.">
+        </form>
+    {% endif %}
     <h2>Bookmarklet</h2>
     <p>
         From <a href="http://github.com">Github</a>
