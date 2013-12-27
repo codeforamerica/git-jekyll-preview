@@ -49,7 +49,7 @@ def prepare_git_checkout(account, repo, ref, token):
         if not exists(repo_path):
             git_clone(repo_href, repo_path)
         else:
-            git_fetch(repo_path)
+            git_fetch(repo_path, ref, ref_sha)
 
         git_checkout(repo_path, checkout_path, ref)
     
@@ -64,12 +64,21 @@ def git_clone(href, path):
     info('Cloning to ' + path)
     run_cmd(('git', 'clone', '--mirror', href, path))
 
-def git_fetch(repo_path):
+def get_ref_sha(repo_path, ref):
+    ''' Get the current SHA for a ref in the given repo path.
+    '''
+    return run_cmd(('git', 'show', '--pretty=%H', '--summary', ref), repo_path).strip()
+
+def git_fetch(repo_path, ref, sha):
     ''' Run `git fetch` inside a local git repository.
     '''
     info('Fetching in ' + repo_path)
     
-    run_cmd(('git', 'fetch'), repo_path)
+    if sha == get_ref_sha(repo_path, ref):
+        debug('Skipping fetch in '+repo_path)
+    
+    else:
+        run_cmd(('git', 'fetch'), repo_path)
     
     touch(repo_path)
 
@@ -84,7 +93,7 @@ def git_checkout(repo_path, checkout_path, ref):
         mkdir(checkout_path)
     
     hash_file = checkout_path + '.commit-hash'
-    commit_hash = run_cmd(('git', 'show', '--pretty=%H', '--summary', ref), repo_path).strip()
+    commit_hash = get_ref_sha(repo_path, ref)
     
     do_checkout = True
     
