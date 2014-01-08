@@ -74,7 +74,17 @@ def git_fetch(repo_path, ref, sha):
     '''
     info('Fetching in ' + repo_path)
     
-    if sha == get_ref_sha(repo_path, ref):
+    try:
+        found_sha = get_ref_sha(repo_path, ref)
+    except RuntimeError:
+        #
+        # Account for a missing ref by performing a complete fetch.
+        #
+        debug('Complete fetch in '+repo_path)
+        run_cmd(('git', 'fetch'), repo_path)
+        found_sha = get_ref_sha(repo_path, ref)
+    
+    if sha == found_sha:
         debug('Skipping fetch in '+repo_path)
     
     else:

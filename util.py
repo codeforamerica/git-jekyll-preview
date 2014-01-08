@@ -41,7 +41,7 @@ def touch(path):
 def run_cmd(args, cwd=None):
     ''' Runs a single command in a new process, returns its stdout.
     '''
-    command = Popen(args, stdout=PIPE, cwd=cwd)
+    command = Popen(args, stdout=PIPE, stderr=PIPE, cwd=cwd)
     command.wait()
     
     if command.returncode != 0:
