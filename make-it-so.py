@@ -1,5 +1,6 @@
 from logging import DEBUG, basicConfig
 from os.path import join, isdir, isfile
+from traceback import format_exc
 from urllib import urlencode
 from time import time
 
@@ -78,6 +79,13 @@ def make_404_response(template, vars):
     '''
     '''
     return make_response(render_template(template, **vars), 404)
+
+def make_500_response(error, traceback):
+    '''
+    '''
+    vars = dict(error=error, traceback=traceback)
+    
+    return make_response(render_template('error-runtime.html', **vars), 500)
 
 @app.route('/')
 def hello_world():
@@ -235,6 +243,8 @@ def repo_ref_slash(account, repo, ref):
         return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
     except PrivateRepoException:
         return make_401_response()
+    except RuntimeError, e:
+        return make_500_response(e, format_exc())
 
     return get_directory_response(site_path)
 
@@ -251,6 +261,8 @@ def repo_ref_path(account, repo, ref, path):
         return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
     except PrivateRepoException:
         return make_401_response()
+    except RuntimeError, e:
+        return make_500_response(e, format_exc())
     
     local_path = join(site_path, path)
 
