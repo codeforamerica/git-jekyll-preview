@@ -8,6 +8,16 @@ server.
 
 Try it live at [jekit.codeforamerica.org](http://jekit.codeforamerica.org).
 
+Status, Contact
+---------------
+
+Git-Jekyll Preview is mostly a singleton-app, built only to be run at a single
+location. For the time being, it's not intended for general redeployment but
+improvements for [jekit.codeforamerica.org](http://jekit.codeforamerica.org)
+are welcomed.
+
+[Michal Migurski](https://github.com/migurski) is currently maintainer.
+
 Install
 -------
 
