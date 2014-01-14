@@ -21,30 +21,38 @@ def prepare_git_checkout(account, repo, ref, token):
     repo_href = 'https://github.com/%s/%s.git' % (account, repo)
     repo_path = join(getcwd(), 'repos/%s-%s' % (account, repo))
     repo_refs = 'https://api.github.com/repos/%s/%s/branches' % (account, repo)
+    repo_sha = 'https://api.github.com/repos/%s/%s/commits/%s' % (account, repo, ref)
     checkout_path = join(getcwd(), 'checkouts/%s-%s-%s' % (account, repo, ref))
     checkout_lock = checkout_path + '.git-lock'
     
     if exists(checkout_path) and is_fresh(checkout_path):
         return checkout_path
     
-    auth_check = OAuth2Session(github_client_id, token=token).get(repo_refs)
+    ref_check = OAuth2Session(github_client_id, token=token).get(repo_refs)
     
-    if auth_check.status_code == 401:
+    if ref_check.status_code == 401:
         # Github wants authentication.
         raise PrivateRepoException()
     
-    elif auth_check.status_code == 404:
+    elif ref_check.status_code == 404:
         # This repository might not exist at all?
         raise MissingRepoException()
     
-    branches = dict([(b['name'], b['commit']['sha']) for b in auth_check.json()])
+    branches = dict([(b['name'], b['commit']['sha']) for b in ref_check.json()])
     ref_sha = branches.get(ref, None)
 
     if ref_sha is None:
-        # The repository exists, but the branch does not?
-        raise MissingRefException()
+        # The ref is not a branch, but it may be a sha.
+        sha_check = OAuth2Session(github_client_id, token=token).get(repo_sha)
+        
+        if sha_check.status_code == 200:
+            # The ref must be a sha hash.
+            ref_sha = sha_check.json()['sha']
+        else:
+            # The repository exists, but the branch does not?
+            raise MissingRefException()
     
-    elif token:
+    if token:
         debug('Adding Github credentials to environment')
         environ.update(dict(GIT_ASKPASS=join(dirname(__file__), 'askpass.py')))
         environ.update(dict(GIT_USERNAME=token['access_token'], GIT_PASSWORD=''))
