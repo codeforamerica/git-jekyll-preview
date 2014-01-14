@@ -8,7 +8,8 @@ from flask import Flask, redirect, request, make_response, render_template, sess
 
 from requests import post
 from requests_oauthlib import OAuth2Session
-from git import prepare_git_checkout, PrivateRepoException, MissingRepoException
+from git import prepare_git_checkout, PrivateRepoException
+from git import MissingRepoException, MissingRefException
 from href import needs_redirect, get_redirect
 from util import get_directory_response
 from util import get_file_response
@@ -241,6 +242,8 @@ def repo_ref_slash(account, repo, ref):
         site_path = jekyll_build(prepare_git_checkout(account, repo, ref, token=get_token()))
     except MissingRepoException:
         return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
+    except MissingRefException:
+        return make_404_response('no-such-ref.html', dict(account=account, repo=repo, ref=ref))
     except PrivateRepoException:
         return make_401_response()
     except RuntimeError, e:
@@ -259,6 +262,8 @@ def repo_ref_path(account, repo, ref, path):
         site_path = jekyll_build(prepare_git_checkout(account, repo, ref, token=get_token()))
     except MissingRepoException:
         return make_404_response('no-such-repo.html', dict(account=account, repo=repo))
+    except MissingRefException:
+        return make_404_response('no-such-ref.html', dict(account=account, repo=repo, ref=ref))
     except PrivateRepoException:
         return make_401_response()
     except RuntimeError, e:
