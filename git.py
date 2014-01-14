@@ -13,12 +13,14 @@ class PrivateRepoException (Exception): pass
 
 class MissingRepoException (Exception): pass
 
+class MissingRefException (Exception): pass
+
 def prepare_git_checkout(account, repo, ref, token):
     '''
     '''
     repo_href = 'https://github.com/%s/%s.git' % (account, repo)
     repo_path = join(getcwd(), 'repos/%s-%s' % (account, repo))
-    repo_refs = 'https://api.github.com/repos/%s/%s/git/refs/heads/%s' % (account, repo, ref)
+    repo_refs = 'https://api.github.com/repos/%s/%s/branches' % (account, repo)
     checkout_path = join(getcwd(), 'checkouts/%s-%s-%s' % (account, repo, ref))
     checkout_lock = checkout_path + '.git-lock'
     
@@ -26,7 +28,6 @@ def prepare_git_checkout(account, repo, ref, token):
         return checkout_path
     
     auth_check = OAuth2Session(github_client_id, token=token).get(repo_refs)
-    ref_sha = auth_check.json().get('object', {}).get('sha', '')
     
     if auth_check.status_code == 401:
         # Github wants authentication.
@@ -35,6 +36,13 @@ def prepare_git_checkout(account, repo, ref, token):
     elif auth_check.status_code == 404:
         # This repository might not exist at all?
         raise MissingRepoException()
+    
+    branches = dict([(b['name'], b['commit']['sha']) for b in auth_check.json()])
+    ref_sha = branches.get(ref, None)
+
+    if ref_sha is None:
+        # The repository exists, but the branch does not?
+        raise MissingRefException()
     
     elif token:
         debug('Adding Github credentials to environment')
