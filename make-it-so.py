@@ -84,7 +84,12 @@ def make_404_response(template, vars):
 def make_500_response(error, traceback):
     '''
     '''
-    vars = dict(error=error, traceback=traceback)
+    try:
+        message = unicode(error)
+    except UnicodeDecodeError:
+        message = str(error).decode('latin-1')
+    
+    vars = dict(error=message, traceback=traceback)
     
     return make_response(render_template('error-runtime.html', **vars), 500)
 
