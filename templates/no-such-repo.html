@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<title>Jekit</title>
-    <link type="text/css" href="http://openstreetmap.us/~migurski/style.css" rel="stylesheet">
-</head>
-<body>
-    <h1>Jekit Error</h1>
+{% extends "page-layout.html" %}
+{% block content %}
+
+    <h2>Jekit Error</h2>
     
     <p>
         Couldn’t find <q>{{account}}/{{repo}}</q>.
         Does it exist?
     </p>
-</body>
-</html>
+
+{% endblock %}

@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<title>Jekit</title>
-    <link type="text/css" href="http://openstreetmap.us/~migurski/style.css" rel="stylesheet">
-</head>
-<body>
-    <h1>Jekit Error</h1>
+{% extends "page-layout.html" %}
+{% block content %}
+
+    <h2>Jekit Error</h2>
     
     <p>
         Couldn’t find <q>{{path}}</q> under
@@ -15,5 +10,5 @@
         Maybe it <a href="https://github.com/{{account}}/{{repo}}/blob/{{ref}}/{{path}}">exists</a>,
         but Jekyll put it at <a href="http://jekyllrb.com/docs/permalinks/">some other location</a>?
     </p>
-</body>
-</html>
+
+{% endblock %}
