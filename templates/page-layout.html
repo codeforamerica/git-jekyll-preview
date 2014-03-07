@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<title>Jekit</title>
+    <link rel="stylesheet" type="text/css" href="//cloud.typography.com/6435252/678502/css/fonts.css" />
+    <link rel="stylesheet" href="http://style.codeforamerica.org/style/css/main.css">
+    <link rel="stylesheet" href="http://style.codeforamerica.org/style/css/layout.css" media="all and (min-width: 40em)">
+    <link href="http://style.codeforamerica.org/style/css/prism.css" rel="stylesheet" />
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if (lt IE 9)&(!IEMobile)]>
+        <link rel="stylesheet" href="http://style.codeforamerica.org/style/css/layout.css" media="all">
+    <![endif]-->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style type="text/css">
+    
+        kbd
+        {
+            background-color: #eee;
+            border: 1px solid rgba(0, 0, 0, .15);
+            border-radius: 5px;
+            padding: 4px 8px;
+        }
+
+        samp
+        {
+            white-space: nowrap;
+            font-size: 80%;
+        }
+
+        kbd a { text-decoration: none }
+        samp em { font-style: normal; background-color: #eee }
+        input[type="submit"] { cursor: pointer }
+
+        img#avatar
+        {
+            vertical-align: top;
+            margin-right: 0.5em;
+            border-radius: 6px;
+            height: 3em;
+        }
+        
+    </style>
+</head>
+<body>
+<div class="js-container">
+
+<nav class="nav-global-primary" role="navigation">
+    <ul class="layout-breve layout-tight">
+        <li><a href="/">About</a></li>
+    </ul>
+</nav><!-- .nav-global-primary -->
+
+<main>
+    <div class="layout-semibreve">
+
+    {% block content %}{% endblock %}
+
+    </div><!-- /.layout-semibreve -->
+</main>
+</div><!-- /.js-container -->
+<script src="http://style.codeforamerica.org/script/global.js"></script>
+</body>
+</html>

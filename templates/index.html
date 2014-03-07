@@ -1,41 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<title>Jekit</title>
-    <link type="text/css" href="http://openstreetmap.us/~migurski/style.css" rel="stylesheet">
-    <style type="text/css">
-    
-        kbd
-        {
-            background-color: rgba(255, 255, 255, .5);
-            border: 1px solid rgba(0, 0, 0, .15);
-            border-radius: 5px;
-            padding: 4px 8px;
-        }
+{% extends "page-layout.html" %}
+{% block content %}
 
-        samp
-        {
-            white-space: nowrap;
-            font-size: 80%;
-        }
-
-        kbd a { text-decoration: none }
-        samp em { font-style: normal }
-        input[type="submit"] { cursor: pointer }
-
-        img#avatar
-        {
-            vertical-align: top;
-            margin-right: 0.5em;
-            border-radius: 6px;
-            height: 3em;
-        }
-        
-    </style>
-</head>
-<body>
-    <h1>Jekit</h1>
+    <h2>Jekit</h2>
     <p>
         Preview your Github-hosted websites before making them live. Use it to
         check your plain static or <a href="http://jekyllrb.com">Jekyll</a>-generated
@@ -43,13 +9,11 @@
         or to your own server.
     </p>
     <p>
-        <a href="http://www.codeforamerica.org"><img src="http://codeforamerica.org/wp-content/uploads/2011/12/CfA_logo-300x120.png" width="150" height="60"></a>
+        Written by <a href="http://www.codeforamerica.org/people/michal-migurski/">Michal Migurski</a>
+        with <a href="http://www.codeforamerica.org/people/mick-thompson/">Mick Thompson</a>,
+        © 2013-2014 <a href="http://codeforamerica.org">Code for America</a>.
     </p>
-    <p>
-        Written by <a href="http://mike.teczno.com">Michal Migurski</a> with
-        <a href="https://github.com/mick">Mick Thompson</a>, © 2013 Code for America.
-    </p>
-    <h2>Check it, before you wreck it.</h2>
+    <h3>Check it, before you wreck it.</h3>
     <ol>
     <li>
         <p>
@@ -90,7 +54,7 @@
         </p>
     </li>
     </ol>
-    <h2>Private Repositories</h2>
+    <h3>Private Repositories</h3>
     <p>
         Jekit will ask for access to your Github account to preview private
         repositories. You can revoke Jekit’s access via your
@@ -100,12 +64,14 @@
     </p>
     {% if id %}
         <form action="logout" method="post">
+          <p>
             <img id="avatar" src="{{id.avatar_url}}" alt="">
             Jekit knows you as <a href="{{id.html_url}}">{{id.login}}</a>.
             <input type="submit" value="Forget me.">
+          </p>
         </form>
     {% endif %}
-    <h2>Bookmarklet</h2>
+    <h3>Bookmarklet</h3>
     <p>
         From <a href="http://github.com">Github</a>
         or <a href="http://Prose.io">Prose.io</a>,
@@ -115,5 +81,5 @@
     <p>
         <kbd><a href="javascript:{{script|safe}}">Preview on {{request.host}}</a></kbd>
     </p>
-</body>
-</html>
+
+{% endblock %}
