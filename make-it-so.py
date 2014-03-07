@@ -24,6 +24,9 @@ app.secret_key = flask_secret_key
 def should_redirect():
     ''' Return True if the current flask.request should redirect.
     '''
+    if request.args.get('go') == u'\U0001f44c':
+        return False
+    
     referer_url = request.headers.get('Referer')
     
     if not referer_url:
