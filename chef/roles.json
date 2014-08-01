@@ -1,5 +1,6 @@
 {
   "name": "ubuntu 12.04",
+  "ruby": "2.0.0-p353",
   "run_list":
   [
     "jekyll",
