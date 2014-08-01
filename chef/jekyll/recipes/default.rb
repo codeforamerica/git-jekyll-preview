@@ -1,17 +1,17 @@
 include_recipe 'ruby-2.0.0-p353'
 
 bash 'install rdiscount' do
-    not_if 'gem list -i rdiscount'
+    creates '/usr/local/rvm/gems/ruby-2.0.0-p353/bin/rdiscount'
     code '
-    source /etc/profile.d/rvm.sh
-    /usr/local/rvm/rubies/ruby-2.0.0-p353/bin/gem install rdiscount --no-ri --no-rdoc
-    '
+        source /etc/profile.d/rvm.sh
+        rvm use ruby-2.0.0-p353
+        gem install rdiscount --no-ri --no-rdoc'
 end
 
 bash 'install jekyll' do
-    not_if 'gem list -i jekyll'
+    creates '/usr/local/rvm/gems/ruby-2.0.0-p353/bin/jekyll'
     code '
-    source /etc/profile.d/rvm.sh
-    /usr/local/rvm/rubies/ruby-2.0.0-p353/bin/gem install jekyll --no-ri --no-rdoc
-    '
+        source /etc/profile.d/rvm.sh
+        rvm use ruby-2.0.0-p353
+        gem install jekyll --no-ri --no-rdoc'
 end
