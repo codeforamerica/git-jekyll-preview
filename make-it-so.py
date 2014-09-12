@@ -1,4 +1,4 @@
-from logging import DEBUG, basicConfig, getLogger, FileHandler, Formatter
+from logging import DEBUG, INFO, getLogger, FileHandler, StreamHandler, Formatter
 from os.path import join, isdir, isfile
 from traceback import format_exc
 from urllib import urlencode
@@ -22,6 +22,10 @@ flask_secret_key = 'poop'
 
 app = Flask(__name__)
 app.secret_key = flask_secret_key
+
+@app.before_first_request
+def adjust_log_level():
+    getLogger('jekit').setLevel(DEBUG if app.debug else INFO)
 
 def should_redirect():
     ''' Return True if the current flask.request should redirect.
@@ -313,17 +317,15 @@ def all_other_paths(path):
     if should_redirect():
         return make_redirect()
 
-app_logfile = environ.get('app-logfile', None)
-
-if app_logfile:
-    jlogger = getLogger('jekit')
-    handler = FileHandler(app_logfile)
-    handler.setFormatter(Formatter('%(asctime)s %(levelname)06s: %(message)s'))
-    jlogger.addHandler(handler)
-    jlogger.setLevel(DEBUG)
+if environ.get('app-logfile', None):
+    handler = FileHandler(environ['app-logfile'])
+    handler.setFormatter(Formatter('%(process)05s %(asctime)s %(levelname)06s: %(message)s'))
 
 else:
-    basicConfig(level=DEBUG, format='%(levelname)06s: %(message)s')
+    handler = StreamHandler()
+    handler.setFormatter(Formatter('%(process)05s %(levelname)06s: %(message)s'))
+
+getLogger('jekit').addHandler(handler)
 
 if __name__ == '__main__':
     app.run('0.0.0.0', debug=True)
