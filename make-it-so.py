@@ -13,6 +13,7 @@ from git import MissingRepoException, MissingRefException
 from href import needs_redirect, get_redirect
 from util import get_directory_response
 from util import get_file_response
+from util import errors_logged
 from jekyll import jekyll_build
 
 from git import github_client_id, github_client_secret

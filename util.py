@@ -3,7 +3,9 @@ from fcntl import flock, LOCK_EX, LOCK_UN
 from contextlib import contextmanager
 from subprocess import Popen, PIPE
 from mimetypes import guess_type
-from logging import debug
+from logging import debug, error
+from traceback import format_exc
+from functools import wraps
 from os.path import join
 from time import time
 
@@ -69,3 +71,18 @@ def get_directory_response(path):
     html = '<ul>' + ''.join(items) + '</ul>'
     
     return Response(html, headers={'Content-Type': 'text/html', 'Cache-Control': 'no-store private'})
+
+def errors_logged(route_function):
+    '''
+    '''
+    @wraps(route_function)
+    def wrapper(*args, **kwargs):
+        try:
+            result = route_function(*args, **kwargs)
+        except Exception, e:
+            error(format_exc())
+            return Response('Nope.', headers={'Content-Type': 'text/plain'}, status=500)
+        else:
+            return result
+    
+    return wrapper
