@@ -1,4 +1,4 @@
-from logging import DEBUG, basicConfig
+from logging import DEBUG, basicConfig, getLogger, FileHandler, Formatter
 from os.path import join, isdir, isfile
 from traceback import format_exc
 from urllib import urlencode
@@ -313,8 +313,17 @@ def all_other_paths(path):
     if should_redirect():
         return make_redirect()
 
-basicConfig(filename=environ.get('app-logfile', None),
-            level=DEBUG, format='%(asctime)s %(levelname)06s: %(message)s')
+app_logfile = environ.get('app-logfile', None)
+
+if app_logfile:
+    jlogger = getLogger('jekit')
+    handler = FileHandler(app_logfile)
+    handler.setFormatter(Formatter('%(asctime)s %(levelname)06s: %(message)s'))
+    jlogger.addHandler(handler)
+    jlogger.setLevel(DEBUG)
+
+else:
+    basicConfig(level=DEBUG, format='%(levelname)06s: %(message)s')
 
 if __name__ == '__main__':
     app.run('0.0.0.0', debug=True)

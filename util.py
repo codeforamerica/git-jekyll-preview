@@ -3,13 +3,15 @@ from fcntl import flock, LOCK_EX, LOCK_UN
 from contextlib import contextmanager
 from subprocess import Popen, PIPE
 from mimetypes import guess_type
-from logging import debug, error
 from traceback import format_exc
+from logging import getLogger
 from functools import wraps
 from os.path import join
 from time import time
 
 from flask import Response
+
+jlogger = getLogger('jekit')
 
 @contextmanager
 def locked_file(path):
@@ -17,7 +19,7 @@ def locked_file(path):
     
         Yields nothing.
     '''
-    debug('Locking ' + path)
+    jlogger.debug('Locking ' + path)
     
     try:
         file = open(path, 'a')
@@ -26,7 +28,7 @@ def locked_file(path):
         yield
 
     finally:
-        debug('Unlocking ' + path)
+        jlogger.debug('Unlocking ' + path)
         flock(file, LOCK_UN)
 
 def is_fresh(path):
@@ -37,7 +39,7 @@ def is_fresh(path):
 def touch(path):
     ''' Touch the path to bring its modified timestamp to now.
     '''
-    debug('Touching ' + path)
+    jlogger.debug('Touching ' + path)
     utime(path, None)
 
 def run_cmd(args, cwd=None):
@@ -80,7 +82,7 @@ def errors_logged(route_function):
         try:
             result = route_function(*args, **kwargs)
         except Exception, e:
-            error(format_exc())
+            jlogger.error(format_exc())
             return Response('Nope.', headers={'Content-Type': 'text/plain'}, status=500)
         else:
             return result

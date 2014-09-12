@@ -1,8 +1,10 @@
 from os.path import join, exists
-from logging import info, debug
+from logging import getLogger
 from shutil import copyfile
 
 from util import run_cmd, touch, is_fresh, locked_file
+
+jlogger = getLogger('jekit')
 
 def jekyll_build(checkout_path):
     '''
@@ -23,11 +25,11 @@ def jekyll_build(checkout_path):
             commit_hash = open(hash_file).read().strip()
         
             if built_hash == commit_hash:
-                debug('Skipping build to ' + jekyll_path)
+                jlogger.debug('Skipping build to ' + jekyll_path)
                 do_build = False
     
         if do_build:
-            info('Building jekyll ' + jekyll_path)
+            jlogger.info('Building jekyll ' + jekyll_path)
             run_cmd(('jekyll', 'build'), checkout_path)
         
             if exists(hash_file):

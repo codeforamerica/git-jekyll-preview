@@ -1,6 +1,6 @@
 from os.path import join, exists, dirname
 from os import getcwd, mkdir, environ
-from logging import info, debug
+from logging import getLogger
 
 from util import locked_file, is_fresh, touch, run_cmd
 from requests_oauthlib import OAuth2Session
@@ -8,6 +8,8 @@ from requests import get
 
 github_client_id = r'e62e0d541bb6d0125b62'
 github_client_secret = r'1f488407e92a59beb897814e9240b5a06a2020e3'
+
+jlogger = getLogger('jekit')
 
 class PrivateRepoException (Exception): pass
 
@@ -53,12 +55,12 @@ def prepare_git_checkout(account, repo, ref, token):
             raise MissingRefException()
     
     if token:
-        debug('Adding Github credentials to environment')
+        jlogger.debug('Adding Github credentials to environment')
         environ.update(dict(GIT_ASKPASS=join(dirname(__file__), 'askpass.py')))
         environ.update(dict(GIT_USERNAME=token['access_token'], GIT_PASSWORD=''))
     
     else:
-        debug('Clearing Github credentials from environment')
+        jlogger.debug('Clearing Github credentials from environment')
         environ.update(dict(GIT_ASKPASS='', GIT_USERNAME='', GIT_PASSWORD=''))
 
     with locked_file(checkout_lock):
@@ -77,7 +79,7 @@ def prepare_git_checkout(account, repo, ref, token):
 def git_clone(href, path):
     ''' Clone a git repository from its remote address to a local path.
     '''
-    info('Cloning to ' + path)
+    jlogger.info('Cloning to ' + path)
     run_cmd(('git', 'clone', '--mirror', href, path))
 
 def get_ref_sha(repo_path, ref):
@@ -88,7 +90,7 @@ def get_ref_sha(repo_path, ref):
 def git_fetch(repo_path, ref, sha):
     ''' Run `git fetch` inside a local git repository.
     '''
-    info('Fetching in ' + repo_path)
+    jlogger.info('Fetching in ' + repo_path)
     
     try:
         found_sha = get_ref_sha(repo_path, ref)
@@ -96,12 +98,12 @@ def git_fetch(repo_path, ref, sha):
         #
         # Account for a missing ref by performing a complete fetch.
         #
-        debug('Complete fetch in '+repo_path)
+        jlogger.debug('Complete fetch in '+repo_path)
         run_cmd(('git', 'fetch'), repo_path)
         found_sha = get_ref_sha(repo_path, ref)
     
     if sha == found_sha:
-        debug('Skipping fetch in '+repo_path)
+        jlogger.debug('Skipping fetch in '+repo_path)
     
     else:
         run_cmd(('git', 'fetch'), repo_path)
@@ -113,7 +115,7 @@ def git_checkout(repo_path, checkout_path, ref):
         
         This function is assumed to be run in a lock.
     '''
-    info('Checking out to ' + checkout_path)
+    jlogger.info('Checking out to ' + checkout_path)
 
     if not exists(checkout_path):
         mkdir(checkout_path)
@@ -127,7 +129,7 @@ def git_checkout(repo_path, checkout_path, ref):
         previous_hash = open(hash_file).read().strip()
         
         if previous_hash == commit_hash:
-            debug('Skipping checkout to '+checkout_path)
+            jlogger.debug('Skipping checkout to '+checkout_path)
             do_checkout = False
 
     if do_checkout:
