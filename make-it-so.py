@@ -2,6 +2,7 @@ from logging import DEBUG, basicConfig
 from os.path import join, isdir, isfile
 from traceback import format_exc
 from urllib import urlencode
+from os import environ
 from time import time
 
 from flask import Flask, redirect, request, make_response, render_template, session
@@ -98,6 +99,7 @@ def make_500_response(error, traceback):
     return make_response(render_template('error-runtime.html', **vars), 500)
 
 @app.route('/')
+@errors_logged
 def hello_world():
     if should_redirect():
         return make_redirect()
@@ -120,6 +122,7 @@ def hello_world():
     return render_template('index.html', id=id, script=script, request=request)
 
 @app.route('/.well-known/status')
+@errors_logged
 def wellknown_status():
     if should_redirect():
         return make_redirect()
@@ -139,6 +142,7 @@ def wellknown_status():
     return resp
 
 @app.route('/bookmarklet.js')
+@errors_logged
 def bookmarklet_script():
     if should_redirect():
         return make_redirect()
@@ -152,6 +156,7 @@ def bookmarklet_script():
     return script
 
 @app.route('/oauth/callback')
+@errors_logged
 def get_oauth_callback():
     ''' Handle Github's OAuth callback after a user authorizes.
     
@@ -202,6 +207,7 @@ def get_oauth_callback():
     return other
 
 @app.route('/logout', methods=['POST'])
+@errors_logged
 def logout():
     '''
     '''
@@ -214,6 +220,7 @@ def logout():
     return redirect('/', 302)
 
 @app.route('/<account>/<repo>')
+@errors_logged
 def repo_only(account, repo):
     ''' Redirect to "master" on a hunch.
     '''
@@ -223,6 +230,7 @@ def repo_only(account, repo):
     return redirect('/%s/%s/master/' % (account, repo), 302)
 
 @app.route('/<account>/<repo>/')
+@errors_logged
 def repo_only_slash(account, repo):
     ''' Redirect to "master" on a hunch.
     '''
@@ -232,6 +240,7 @@ def repo_only_slash(account, repo):
     return redirect('/%s/%s/master/' % (account, repo), 302)
 
 @app.route('/<account>/<repo>/<ref>')
+@errors_logged
 def repo_ref(account, repo, ref):
     ''' Redirect to add trailing slash.
     '''
@@ -241,6 +250,7 @@ def repo_ref(account, repo, ref):
     return redirect('/%s/%s/%s/' % (account, repo, ref), 302)
 
 @app.route('/<account>/<repo>/<ref>/')
+@errors_logged
 def repo_ref_slash(account, repo, ref):
     ''' Show repository root directory listing.
     '''
@@ -261,6 +271,7 @@ def repo_ref_slash(account, repo, ref):
     return get_directory_response(site_path)
 
 @app.route('/<account>/<repo>/<ref>/<path:path>')
+@errors_logged
 def repo_ref_path(account, repo, ref, path):
     ''' Show response for a path, whether a file or directory.
     '''
@@ -295,14 +306,15 @@ def repo_ref_path(account, repo, ref, path):
     return make_404_response('error-404.html', kwargs)
 
 @app.route('/<path:path>')
+@errors_logged
 def all_other_paths(path):
     '''
     '''
     if should_redirect():
         return make_redirect()
 
-if __name__ == '__main__':
-    basicConfig(level=DEBUG, format='%(levelname)06s: %(message)s')
-    app.run('0.0.0.0', debug=True)
+basicConfig(filename=environ.get('app-logfile', None),
+            level=DEBUG, format='%(asctime)s %(levelname)06s: %(message)s')
 
-    
+if __name__ == '__main__':
+    app.run('0.0.0.0', debug=True)
