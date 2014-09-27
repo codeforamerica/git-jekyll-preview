@@ -1,11 +1,13 @@
-base_dir = File.join(File.dirname(__FILE__), '..', '..', '..')
+link '/opt/git-jekyll-preview' do
+    to File.absolute_path(File.join(File.dirname(__FILE__), '..', '..', '..'))
+end
 
-directory File.join(base_dir, 'repos') do
+directory '/opt/git-jekyll-preview/repos' do
     mode 0777
     action :create
 end
 
-directory File.join(base_dir, 'checkouts') do
+directory '/opt/git-jekyll-preview/checkouts' do
     mode 0777
     action :create
 end
