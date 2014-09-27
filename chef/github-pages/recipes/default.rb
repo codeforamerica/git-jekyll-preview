@@ -5,3 +5,6 @@ gem_package 'github-pages' do
     options "--no-rdoc --no-ri"
     action :install
 end
+
+# Jekyll wants a JS runtime
+package 'nodejs'
