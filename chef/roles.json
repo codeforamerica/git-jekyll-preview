@@ -5,7 +5,8 @@
   [
     "github-pages",
     "flask", "requests",
-    "directories"
+    "directories",
+    "apache", "gunicorn"
   ],
   "user": "ubuntu"
 }
