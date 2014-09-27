@@ -4,8 +4,8 @@
 # This script is safe to run multiple times.
 #
 if [ ! `which chef-solo` ]; then
-    apt-get install -y rubygems
-    gem install chef ohai --no-rdoc --no-ri
+    apt-get install -y ruby1.9.3 build-essential
+    gem1.9.3 install chef ohai --no-rdoc --no-ri
 fi
 
 BASE=`dirname $0`

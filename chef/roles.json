@@ -3,7 +3,7 @@
   "ruby": "2.0.0-p353",
   "run_list":
   [
-    "jekyll",
+    "github-pages",
     "flask", "requests",
     "directories"
   ],
