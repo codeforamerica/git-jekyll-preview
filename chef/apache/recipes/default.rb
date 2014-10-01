@@ -86,3 +86,8 @@ link '/etc/apache2/sites-enabled/jekit' do
     to '/etc/apache2/sites-available/jekit'
     action :create
 end
+
+#
+# Make it go.
+#
+execute "apache2ctl restart"
