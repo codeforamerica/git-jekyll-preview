@@ -60,14 +60,14 @@ file '/etc/apache2/sites-available/jekit-ssl' do
     content File.open(File.dirname(__FILE__) + "/apache-ssl.conf").read()
 end
 
-file '/etc/ssl/certs/jekit_codeforamerica_org.crt' do
+file '/etc/ssl/certs/cfa-2014-ssl.crt' do
     owner 'root'
     group 'root'
     mode '0644'
     action :create
 end
 
-file '/etc/ssl/private/jekit-secret.key' do
+file '/etc/ssl/private/cfa-2014-ssl.key' do
     owner 'root'
     group 'root'
     mode '0644'
