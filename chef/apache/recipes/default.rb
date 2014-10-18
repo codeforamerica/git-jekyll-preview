@@ -25,6 +25,11 @@ link '/etc/apache2/mods-enabled/proxy_http.load' do
     action :create
 end
 
+link '/etc/apache2/mods-enabled/headers.load' do
+    to '/etc/apache2/mods-available/headers.load'
+    action :create
+end
+
 file '/etc/apache2/sites-available/jekit' do
     owner 'root'
     group 'root'
