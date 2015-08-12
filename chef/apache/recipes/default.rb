@@ -20,6 +20,11 @@ link '/etc/apache2/mods-enabled/ssl.load' do
     action :create
 end
 
+link '/etc/apache2/mods-enabled/socache_shmcb.load' do
+    to '/etc/apache2/mods-available/socache_shmcb.load'
+    action :create
+end
+
 link '/etc/apache2/mods-enabled/proxy_http.load' do
     to '/etc/apache2/mods-available/proxy_http.load'
     action :create
