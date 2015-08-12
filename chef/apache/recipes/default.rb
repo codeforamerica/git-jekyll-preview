@@ -35,7 +35,7 @@ link '/etc/apache2/mods-enabled/headers.load' do
     action :create
 end
 
-file '/etc/apache2/sites-available/jekit' do
+file '/etc/apache2/sites-available/jekit.conf' do
     owner 'root'
     group 'root'
     mode '0755'
@@ -43,21 +43,21 @@ file '/etc/apache2/sites-available/jekit' do
     content File.open(File.dirname(__FILE__) + "/apache-jekit.conf").read()
 end
 
-link '/etc/apache2/sites-enabled/000-default' do
+link '/etc/apache2/sites-enabled/000-default.conf' do
     action :delete
 end
 
-link '/etc/apache2/sites-enabled/jekit' do
-    to '/etc/apache2/sites-available/jekit'
+link '/etc/apache2/sites-enabled/jekit.conf' do
+    to '/etc/apache2/sites-available/jekit.conf'
     action :create
 end
 
-link '/etc/apache2/sites-enabled/default-ssl' do
-    to '/etc/apache2/sites-available/default-ssl'
+link '/etc/apache2/sites-enabled/default-ssl.conf' do
+    to '/etc/apache2/sites-available/default-ssl.conf'
     action :delete
 end
 
-file '/etc/apache2/sites-available/jekit-ssl' do
+file '/etc/apache2/sites-available/jekit-ssl.conf' do
     owner 'root'
     group 'root'
     mode '0755'
@@ -79,8 +79,8 @@ file '/etc/ssl/private/cfa-2014-ssl.key' do
     action :create
 end
 
-link '/etc/apache2/sites-enabled/jekit-ssl' do
-    to '/etc/apache2/sites-available/jekit-ssl'
+link '/etc/apache2/sites-enabled/jekit-ssl.conf' do
+    to '/etc/apache2/sites-available/jekit-ssl.conf'
     action :create
 end
 
