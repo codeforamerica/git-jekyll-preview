@@ -39,4 +39,4 @@ To run for testing:
 
 To run in production, with [Gunicorn](http://gunicorn.org):
 
-    gunicorn make-it-so:app
+    gunicorn -b 0.0.0.0:8080 -w 4 -t 300 -e app-logfile=/var/log/jekit/app.log --access-logfile /var/log/jekit/access.log make-it-so:app
